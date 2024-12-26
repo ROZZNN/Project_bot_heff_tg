@@ -30,7 +30,7 @@ def handle_message(update: Update, context: CallbackContext) -> None:
 # Функция для поиска рецептов
 def find_recipes(ingredients):
     api_key = 'f9c90cf8e3554ae7b2b54f64742c579a'
-    url = f'https://api.spoonacular.com/recipes/findByIngredients?ingredients={",".join(ingredients.split())}&apiKey={api_key}'
+    url = f'https://api.spoonacular.com/recipes/findByIngredients?ingredients={",".join(ingredients.split())}&number=5&apiKey={api_key}'
     
     response = requests.get(url)  # Отправляем GET-запрос к API
     if response.status_code == 200:
@@ -43,6 +43,7 @@ def find_recipes(ingredients):
             return "Нет рецептов, соответствующих вашим ингредиентам."
     else:
         return "Ошибка:001; напишите в поддержку"
+
 
 # Функция для получения рецепта дня
 def recipe_of_the_day(update: Update, context: CallbackContext) -> None:
@@ -65,8 +66,8 @@ def save_favorite(update: Update, context: CallbackContext) -> None:
     favorite_recipes[user_id].append(recipe_name)
     update.message.reply_text(f'Рецепт "{recipe_name}" добавлен в Ваши любимые!')
 
-def help() -> None:
-    update.message.reply_text(f'Вот команды доступные команды бота: /help ,/start ,/recipe_of_the_day ,/save_favorite')
+def hellp(update: Update, context: CallbackContext) -> None:
+    return update.message.reply_text(f'Вот команды доступные команды бота: /help ,/start ,/recipe_of_the_day ,/save_favorite')
     
 def main() -> None:
     updater = Updater(TOKEN)
@@ -75,9 +76,8 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("recipe_of_the_day", recipe_of_the_day))  # Добавлена команда для рецепта дня
     dispatcher.add_handler(CommandHandler("save_favorite", save_favorite))  # Добавлена команда для сохранения любимого рецепта
-    dispatcher.add_handler(CommandHandler("help", help))
+    dispatcher.add_handler(CommandHandler("help", hellp))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
-
     updater.start_polling()
     updater.idle()
 
