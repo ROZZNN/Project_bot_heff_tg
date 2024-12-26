@@ -14,7 +14,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # Словарь для хранения любимых рецептов пользователей
 favorite_recipes = {}
-
 # Функция для старта
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Привет! Напиши мне продукты, которые у тебя есть, или используй команду /recipe_of_the_day для получения рецепта дня.')
@@ -66,6 +65,9 @@ def save_favorite(update: Update, context: CallbackContext) -> None:
     favorite_recipes[user_id].append(recipe_name)
     update.message.reply_text(f'Рецепт "{recipe_name}" добавлен в Ваши любимые!')
 
+def help() -> None:
+    update.message.reply_text(f'Вот команды доступные команды бота: /help ,/start ,/recipe_of_the_day ,/save_favorite')
+    
 def main() -> None:
     updater = Updater(TOKEN)
     dispatcher = updater.dispatcher
@@ -73,6 +75,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("recipe_of_the_day", recipe_of_the_day))  # Добавлена команда для рецепта дня
     dispatcher.add_handler(CommandHandler("save_favorite", save_favorite))  # Добавлена команда для сохранения любимого рецепта
+    dispatcher.add_handler(CommandHandler("help", help))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
 
     updater.start_polling()
