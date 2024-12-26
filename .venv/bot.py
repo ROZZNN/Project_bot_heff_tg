@@ -12,8 +12,8 @@ TOKEN = '7616264600:AAETYkgioF5ruz83npkJVN-yTHb78V6RDN8'
 # Настройка логирования
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-# Инициализация переводчика
-translator = Translator()
+# Словарь для хранения любимых рецептов пользователей
+favorite_recipes = {}
 
 # Функция для старта
 def start(update: Update, context: CallbackContext) -> None:
@@ -22,13 +22,9 @@ def start(update: Update, context: CallbackContext) -> None:
 # Функция для обработки сообщений
 def handle_message(update: Update, context: CallbackContext) -> None:
     user_input = update.message.text
-    # Переводим входное сообщение на английский
-    translated_input = translator.translate(user_input, dest='en').text
-    recipes = find_recipes(translated_input)  # Функция для поиска рецептов
+    recipes = find_recipes(user_input)  # Функция для поиска рецептов
     if recipes:
-        # Переводим ответ на русский
-        translated_recipes = translator.translate(f'Вот рецепты, которые Вы можете приготовить:\n{recipes}', dest='ru').text
-        update.message.reply_text(translated_recipes)
+        update.message.reply_text(f'Вот рецепты, которые Вы можете приготовить:\n{recipes}')
     else:
         update.message.reply_text('Извини, я не нашел рецептов с этими продуктами.')
 
@@ -57,11 +53,18 @@ def recipe_of_the_day(update: Update, context: CallbackContext) -> None:
     response = requests.get(url)  # Отправляем GET-запрос к API
     if response.status_code == 200:
         recipe = response.json()['recipes'][0]  # Получаем случайный рецепт
-        # Переводим ответ на русский
-        translated_recipe = translator.translate(f'Рецепт дня: {recipe["title"]}\nИнструкция: {recipe["instructions"]}', dest='ru').text
-        update.message.reply_text(translated_recipe)
+        update.message.reply_text(f'Рецепт дня: {recipe["title"]}\nИнструкция: {recipe["instructions"]}')
     else:
         update.message.reply_text("Ошибка: не удалось получить рецепт дня.")
+
+# Функция для сохранения любимого рецепта
+def save_favorite(update: Update, context: CallbackContext) -> None:
+    user_id = update.message.from_user.id
+    recipe_name = " ".join(context.args)  # Получаем название рецепта из аргументов команды
+    if user_id not in favorite_recipes:
+        favorite_recipes[user_id] = []
+    favorite_recipes[user_id].append(recipe_name)
+    update.message.reply_text(f'Рецепт "{recipe_name}" добавлен в Ваши любимые!')
 
 def main() -> None:
     updater = Updater(TOKEN)
@@ -69,6 +72,7 @@ def main() -> None:
 
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("recipe_of_the_day", recipe_of_the_day))  # Добавлена команда для рецепта дня
+    dispatcher.add_handler(CommandHandler("save_favorite", save_favorite))  # Добавлена команда для сохранения любимого рецепта
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
 
     updater.start_polling()
