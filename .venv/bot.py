@@ -25,7 +25,7 @@ def handle_message(update: Update, context: CallbackContext) -> None:
     if recipes:
         update.message.reply_text(f'Вот первые 5 рецептов, которые Вы можете приготовить:\n{recipes} \n Иструкции к приготовлению вы можете найти с помощю команды /get_instructions (Имя рецепта)')
     else:
-        update.message.reply_text('Извини, я не нашел рецептов с этими продуктами.')
+        update.message.reply_text('Извините, я не нашел рецептов с этими продуктами.')
 
 # Функция для поиска рецептов
 def find_recipes(ingredients):
@@ -62,8 +62,10 @@ def save_favorite(update: Update, context: CallbackContext) -> None:
     recipe_name = " ".join(context.args)  # Получаем название рецепта из аргументов команды
     if user_id not in favorite_recipes:
         favorite_recipes[user_id] = []
-    favorite_recipes[user_id].append(recipe_name)
-    update.message.reply_text(f'Рецепт "{recipe_name}" добавлен в Ваши любимые рецепты!')
+        favorite_recipes[user_id].append(recipe_name)
+        update.message.reply_text(f'Рецепт "{recipe_name}" добавлен в Ваши любимые рецепты!')
+    else 
+        update.message.reply_text(f'Данный рецепт уже добавлен в избранное')
 
 # Функция для получения инструкции по приготовлению
 def get_recipe_instructions(update: Update, context: CallbackContext) -> None:
