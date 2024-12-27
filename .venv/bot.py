@@ -6,7 +6,6 @@ from googletrans import Translator
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext
 import random
 
-# Вставьте Ваш токен
 TOKEN = '7616264600:AAETYkgioF5ruz83npkJVN-yTHb78V6RDN8'
 
 # Настройка логирования
