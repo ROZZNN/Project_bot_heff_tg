@@ -64,7 +64,7 @@ def save_favorite(update: Update, context: CallbackContext) -> None:
         favorite_recipes[user_id] = []
         favorite_recipes[user_id].append(recipe_name)
         update.message.reply_text(f'Рецепт "{recipe_name}" добавлен в Ваши любимые рецепты!')
-    else 
+    else:
         update.message.reply_text(f'Данный рецепт уже добавлен в избранное')
 
 # Функция для получения инструкции по приготовлению
